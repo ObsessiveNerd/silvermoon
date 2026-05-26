@@ -26,10 +26,10 @@ end
 
 function World:setup()
     createMap()
-    player:add()
-    for _, enemy in ipairs(enemiesList) do
-        self.enemyFactory:addEnemyToMap(enemy.type, enemy.x, enemy.y, enemy.index)
-    end
+    -- player:add()
+    -- for _, enemy in ipairs(enemiesList) do
+    --     self.enemyFactory:addEnemyToMap(enemy.type, enemy.x, enemy.y, enemy.index)
+    -- end
 end
 
 function World:update()

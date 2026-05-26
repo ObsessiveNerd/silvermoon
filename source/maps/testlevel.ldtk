@@ -1070,7 +1070,7 @@
 			"__cHei": 42,
 			"identifier": "Test_map",
 			"uid": 1,
-			"relPath": "../sprites/test.png",
+			"relPath": "../sprites/test-table-8-8.png",
 			"embedAtlas": null,
 			"pxWid": 344,
 			"pxHei": 336,
