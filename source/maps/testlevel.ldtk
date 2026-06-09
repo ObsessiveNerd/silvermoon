@@ -1078,8 +1078,8 @@
 			"spacing": 0,
 			"padding": 0,
 			"tags": [],
-			"tagsSourceEnumUid": null,
-			"enumTags": [],
+			"tagsSourceEnumUid": 32,
+			"enumTags": [{ "enumValueId": "Just_a_wall", "tileIds": [225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244] }],
 			"customData": [],
 			"savedSelections": [],
 			"cachedPixelData": {
@@ -1410,7 +1410,7 @@
 					"layerDefUid": 6,
 					"pxOffsetX": 0,
 					"pxOffsetY": 0,
-					"visible": true,
+					"visible": false,
 					"optionalRules": [],
 					"intGridCsv": [
 						1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,

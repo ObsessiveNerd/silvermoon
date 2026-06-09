@@ -14,16 +14,17 @@ currentDirection = 'Down'
 
 function Player:init(revolver)
     self.revolver = Revolver()
-    playerImage = gfx.image.new("sprites/player")
+    playerImage = gfx.image.new("sprites/proto1")
     self.viewRadius = 4
-    self.tileX = 10
-    self.tileY = 10
+    self.tileX = 5
+    self.tileY = 5
     self.speed = 3
     self.playerSprite = gfx.sprite.new(playerImage)
     local posX, posY = (self.tileX - 1) * (TILE_SIZE), (self.tileY - 1) * (TILE_SIZE)
     print("Initializing player at: ", posX, posY)
     self.playerSprite:moveTo(posX, posY)
     self.playerSprite:setTag(TAGS.Player)
+    self.playerSprite:setZIndex(1000)
     self.maxHealth = 100
     self.health = 100
 end
@@ -60,13 +61,14 @@ function Player:update()
         needsUpdate = true
         currentDirection = 'Right'
     end
-
+    
     if needsUpdate then
         local x, y = self.playerSprite:getPosition()
-        local goalX, goalY = x + moveX * self.speed, y + moveY * self.speed
+        local goalX = x + moveX * self.speed
+        local goalY = y + moveY * self.speed
         
-        local actualX, actualY, collisions, numberOfCollisions = self.playerSprite:moveWithCollisions(goalX, goalY) --TODO: we'll have to normalize the vector before applying speed at some point
-        for i=1, numberOfCollisions do
+        local actualX, actualY, collisions, numberOfCollisions = self.playerSprite:moveWithCollisions(goalX, goalY)
+        for i = 1, numberOfCollisions do
             if collisions[i].other:getTag() == TAGS.Enemy then
                 collisions[i].other:removeFromWorld()
                 setContext('Battle')
@@ -74,7 +76,7 @@ function Player:update()
             end
         end
 
-        local x, y = self.playerSprite:getPosition()
+        x, y = self.playerSprite:getPosition()
         local tx, ty = self:getTilePosition(x, y)
         if tx ~= self.tileX or ty ~= self.tileY then
             self.tileX = tx
@@ -84,23 +86,23 @@ function Player:update()
         gfx.setDrawOffset(-x + 200, -y + 120)
     end
 
-    -- if pd.buttonJustPressed(pd.kButtonA) then
-    --     local x, y = self.playerSprite:getPosition()
-    --     local xDir = 0
-    --     local yDir = 0
+    if pd.buttonJustPressed(pd.kButtonA) then
+        local x, y = self.playerSprite:getPosition()
+        local xDir = 0
+        local yDir = 0
 
-    --     if currentDirection == 'Up' then
-    --         yDir = -1
-    --     elseif currentDirection == 'Down' then
-    --         yDir = 1
-    --     elseif currentDirection == 'Left' then
-    --         xDir = -1
-    --     elseif currentDirection == 'Right' then
-    --         xDir = 1
-    --     end
+        if currentDirection == 'Up' then
+            yDir = -1
+        elseif currentDirection == 'Down' then
+            yDir = 1
+        elseif currentDirection == 'Left' then
+            xDir = -1
+        elseif currentDirection == 'Right' then
+            xDir = 1
+        end
 
-    --     self.revolver:fire(x, y, xDir, yDir)
-    -- end
+        self.revolver:fire(x, y, xDir, yDir)
+    end
 end
 
 function Player:getTilePosition(px, py)

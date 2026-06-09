@@ -9,28 +9,31 @@ import "CoreLibs/sprites"
 class('Tile').extends(gfx.sprite)
 
 function Tile:init(x, y, image)
-    self.image = image
+    self.tileImage = image
     self.visible = false
     self.blockSight = false
-    self:setImage(self.image)
-    local posX, posY = self:tilePosToWorldPos(x, y)
-    self:moveTo(posX, posY)
+    self.seen = false
+    self:setImage(self.tileImage)
+    -- self:setCenter(0, 0)
+    -- local posX, posY = self:tilePosToWorldPos(x, y)
+    self:moveTo(x, y)
 end
 
-function Tile:drawTile()
-    gfx.pushContext(self.image)
+function Tile:draw()
+    if self.visible then
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
+        self.tileImage:draw(0, 0)
+    elseif self.blockSight and self.seen then
         gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
-        if self.visible then
-            gfx.setColor(gfx.kColorWhite)
-        elseif self.blocksSight and self.seen then
-            gfx.setColor(gfx.kColorWhite)
-        else
-            gfx.setColor(gfx.kColorBlack)
-        end
+        gfx.setColor(gfx.kColorWhite)
         gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
-    gfx.popContext()
+    else
+        gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+    end
 end
 
 function Tile:tilePosToWorldPos(x, y)
-    return (x) * TILE_SIZE, (y) * TILE_SIZE
+    return x, y
 end

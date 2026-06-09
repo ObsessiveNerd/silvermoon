@@ -1,4 +1,3 @@
-local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 import "CoreLibs/graphics"
@@ -6,119 +5,175 @@ import "CoreLibs/sprites"
 import "tile"
 import "PlaydateLDtkImporter/LDtk"
 
-MAP_WIDTH = 20
-MAP_HEIGHT = 20
-
 local TILE_SIZE = 8
-local TILES_PER_ROW = 43
-local jsonData = nil
-tempItems = {}
-map = {}
-visibleTiles = {}
-local tiles = nil
 
--- for x = 1, MAP_WIDTH do
---     map[x] = {}
---     for y = 1, MAP_HEIGHT do
---         map[x][y] = Tile(x - 1, y - 1, gfx.image.new(TILE_SIZE, TILE_SIZE))
---     end
--- end
+class("Map").extends()
 
-function setBlocksSight(x, y)
-    map[x][y].blockSight = true
+--------------------------------------------------
+-- INIT
+--------------------------------------------------
+function Map:init()
+    self.map = {}
+    self.visibleTiles = {}
+
+    self.width = 0
+    self.height = 0
+
+    self.tileTable = nil
+
+    self.walls = nil
+    self.ground = nil
+    self.unique = nil
 end
 
-function createBlockedSightTile(x, y)
-    local image = gfx.image.new("sprites/debug-tile-32")
-    local sprite = gfx.sprite.new(image)
-    sprite:moveTo((x-1) * (TILE_SIZE), (y-1) * (TILE_SIZE))
-    setBlocksSight(x, y)
-    -- for xOffset = 0, 3 do
-    --     for yOffset = 0, 3 do
-    --         setBlocksSight(x + xOffset - 1, y + yOffset - 1)
-    --     end
-    -- end
-    table.insert(tempItems, sprite)
+--------------------------------------------------
+-- PUBLIC SETUP
+--------------------------------------------------
+function Map:createMap()
+    self:loadLDtk()
+    self:buildTiles()
 end
 
--- createBlockedSightTile(12, 12)
--- createBlockedSightTile(12, 13)
--- createBlockedSightTile(12, 14)
--- createBlockedSightTile(12, 15)
+--------------------------------------------------
+-- LDtk loading (data only)
+--------------------------------------------------
+function Map:loadLDtk()
+    LDtk.load("maps/testlevel.ldtk")
 
--- createBlockedSightTile(15, 18)
--- createBlockedSightTile(15, 19)
--- createBlockedSightTile(15, 20)
--- createBlockedSightTile(16, 20)
--- createBlockedSightTile(17, 20)
--- createBlockedSightTile(18, 20)
+    self.tileTable =
+        gfx.imagetable.new("sprites/test-table-8-8")
 
--- createBlockedSightTile(13, 2)
--- createBlockedSightTile(13, 13)
+    --assert(self.tileTable, "Failed to load imagetable")
 
-function createMap()
+    self.walls =
+        LDtk.create_tilemap("Level_0", "Walls_AutoLayer")
 
+    self.ground =
+        LDtk.create_tilemap("Level_0", "Ground_textures")
 
-    loadMap()
-    -- drawMap()
-    -- for x = 1, MAP_WIDTH do
-    --     for y = 1, MAP_HEIGHT do
-    --         map[x][y]:add()
-    --     end
-    -- end
-
-    --  for i = 1, #tempItems do
-    --     tempItems[i]:add()
-    -- end
+    self.unique =
+        LDtk.create_tilemap("Level_0", "Unique_tiles")
 end
 
-function clearMap()
-    for i, tile in ipairs(visibleTiles) do
-        tile.visible = false
+--------------------------------------------------
+-- BUILD TILE OBJECTS
+--------------------------------------------------
+function Map:buildTiles()
+    local w, h = self.walls:getSize()
+
+    self.width = w
+    self.height = h
+
+    local emptyIDs =
+        LDtk.get_empty_tileIDs(
+            "Level_0",
+            "Just_a_wall",
+            "Walls_AutoLayer"
+        )
+
+    local emptyLookup = {}
+    for _, id in ipairs(emptyIDs) do
+        emptyLookup[id] = true
     end
-    visibleTiles = {}
-end
 
--- function drawMap()
---     for x = 1, MAP_WIDTH do
---         for y = 1, MAP_HEIGHT do
---             local tile = map[x][y]
---             tile:drawTile()
---         end
---     end
--- end
+    for x = 1, w do
+        self.map[x] = {}
 
-function setVisible(x, y)
-    map[x][y].visible = true
-    map[x][y].seen = true
-    table.insert(visibleTiles, map[x][y])
-end
+        for y = 1, h do
 
-function removeMap()
-    for x = 1, MAP_WIDTH do
-        for y = 1, MAP_HEIGHT do
-            map[x][y]:remove()
+            local groundID = self.ground:getTileAtPosition(x, y)
+            local wallID = self.walls:getTileAtPosition(x, y)
+--HATE
+            if groundID == nil then
+                groundID = 0
+            end
+
+            if groundID > 0 and wallID ~= nil and wallID > 0 then
+                groundID = 0
+            end
+-- HATE
+      
+            local uniqueID = self.unique:getTileAtPosition(x, y)
+
+            local isWall =
+                wallID ~= 0 and not emptyLookup[wallID]
+
+            local image =
+                self:getTileImage(groundID, uniqueID, wallID)
+
+            local tileX = (x - 1) * TILE_SIZE
+            local tileY = (y - 1) * TILE_SIZE
+            local tile = nil
+
+            if self.map[x][y] == nil then
+                tile = Tile(tileX, tileY, image)
+                self.map[x][y] = tile
+            end
+
+            tile.blockSight = isWall
+            tile.visible = false
+            tile.seen = false
+
+            
+            tile:add()
         end
     end
-    for i = 1, #tempItems do
-        tempItems[i]:remove()
+end
+
+--------------------------------------------------
+-- TILE GRAPHICS LOOKUP
+--------------------------------------------------
+function Map:getTileImage(groundID, uniqueID, wallID)
+
+    local id =
+        uniqueID ~= 0 and uniqueID or groundID
+
+    if id == 0 then id = wallID end
+    if id == 0 then id = 1 end
+    if id == nil then id = 0 end
+
+    return self.tileTable:getImage(id)
+end
+
+--------------------------------------------------
+-- TILE ACCESS HELPERS
+--------------------------------------------------
+function Map:getTile(x, y)
+    if not self.map[x] then return nil end
+    return self.map[x][y]
+end
+
+--------------------------------------------------
+-- FOV INTERFACE (IMPORTANT)
+--------------------------------------------------
+function Map:isOpaque(x, y)
+    local tile = self:getTile(x, y)
+    if not tile then return true end
+    return tile.blockSight
+end
+
+function Map:setVisible(x, y)
+    local tile = self:getTile(x, y)
+    if not tile then return end
+
+    if not tile.visible then
+        tile.visible = true
+        tile.seen = true
+
+        table.insert(self.visibleTiles, tile)
     end
 end
 
-function loadMap()
+function Map:clearVisibility()
+    for _, tile in ipairs(self.visibleTiles) do
+        tile.visible = false
+    end
+    self.visibleTiles = {}
+end
 
-   LDtk.load("maps/testlevel.ldtk")
-   local tilemap = LDtk.create_tilemap("Level_0")
-   
-    -- gfx.pushContext()
-        pd.display.setScale(2)
-        tilemap:draw(0, 0)
-    -- gfx.popContext()
-
-   for index, entity in ipairs( LDtk.get_entities( "Level_0" ) ) do
-	print("Entity: " .. entity.name )
-    -- if entity.name=="Player" then
-		-- player.sprite:add()
-		-- player.init( entity )
-	end
+--------------------------------------------------
+-- OPTIONAL DEBUG
+--------------------------------------------------
+function Map:debugPrintSize()
+    print("Map size:", self.width, self.height)
 end

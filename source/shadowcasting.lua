@@ -15,21 +15,16 @@ local multipliers = {
 }
 
 function computeFOV(px, py, radius)
-    -- Step 1: clear visibility
-    clearMap()
+    Map:clearMap()
 
-    -- player tile always visible
-    setVisible(px, py)
+    Map:setVisible(px, py)
 
-    -- cast in 8 directions
     for i = 1, 8 do
         castLight(px, py, 1, 1.0, 0.0, radius,
             multipliers[i][1], multipliers[i][2],
             multipliers[i][3], multipliers[i][4]
         )
     end
-
-    drawMap()
 end
 
 function castLight(cx, cy, row, startSlope, endSlope, radius, xx, xy, yx, yy)
@@ -58,11 +53,10 @@ function castLight(cx, cy, row, startSlope, endSlope, radius, xx, xy, yx, yy)
                 break
             end
 
-            -- bounds check
             if X >= 1 and X <= MAP_WIDTH and Y >= 1 and Y <= MAP_HEIGHT then
                 local distSq = dx * dx + dy * dy
                 if distSq <= radiusSq then
-                    setVisible(X, Y)
+                    Map:setVisible(X, Y)
                 end
 
                 if blocked then

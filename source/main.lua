@@ -29,14 +29,14 @@ local contexts = {
     ['Battle'] = Battle()
 }
 
+pd.display.setScale(2)
 currentContext = contexts['World']
 currentContext:setup()
 
 function playdate.update()
     currentContext:update()
-
-    -- gfx.sprite.update()
-    -- pd.timer.updateTimers()
+    gfx.sprite.update()
+    pd.timer.updateTimers()
 end
 
 function setContext(newContext)
