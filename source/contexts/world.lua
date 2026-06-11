@@ -11,8 +11,11 @@ import "enemies/enemy_factory"
 
 class('World').extends()
 
+
+
 function World:init()
     self.map = Map()
+    GLOBAL_MAP = self.map
 
     -- self.enemyFactory = EnemyFactory()
     -- for i = 1, 1 do
@@ -28,7 +31,7 @@ end
 
 function World:setup()
     self.map:createMap()
-    -- player:add()
+    player:add()
     -- for _, enemy in ipairs(enemiesList) do
     --     self.enemyFactory:addEnemyToMap(enemy.type, enemy.x, enemy.y, enemy.index)
     -- end

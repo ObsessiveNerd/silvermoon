@@ -34,7 +34,7 @@ function Player:add()
     self.playerSprite:setCollideRect(0, 0, TILE_SIZE, TILE_SIZE)
     self.playerSprite:moveTo((self.tileX - 1) * (TILE_SIZE), (self.tileY - 1) * (TILE_SIZE))
     local x, y = self.playerSprite:getPosition()
-    gfx.setDrawOffset(-x + 200, -y + 120)
+    -- gfx.setDrawOffset(-x + 200, -y + 120)
     computeFOV(self.tileX, self.tileY, self.viewRadius)
 end
 
@@ -81,9 +81,10 @@ function Player:update()
         if tx ~= self.tileX or ty ~= self.tileY then
             self.tileX = tx
             self.tileY = ty
+            print("Player moved to tile: ", self.tileX, self.tileY)
             computeFOV(self.tileX, self.tileY, self.viewRadius)
         end
-        gfx.setDrawOffset(-x + 200, -y + 120)
+        -- gfx.setDrawOffset(-x + 200, -y + 120)
     end
 
     if pd.buttonJustPressed(pd.kButtonA) then

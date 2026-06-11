@@ -43,8 +43,6 @@ function Map:loadLDtk()
     self.tileTable =
         gfx.imagetable.new("sprites/test-table-8-8")
 
-    --assert(self.tileTable, "Failed to load imagetable")
-
     self.walls =
         LDtk.create_tilemap("Level_0", "Walls_AutoLayer")
 
@@ -64,6 +62,9 @@ function Map:buildTiles()
     self.width = w
     self.height = h
 
+    MAP_WIDTH = w
+    MAP_HEIGHT = h
+
     local emptyIDs =
         LDtk.get_empty_tileIDs(
             "Level_0",
@@ -72,10 +73,22 @@ function Map:buildTiles()
         )
 
     local emptyLookup = {}
+    local wallLookup = {}
+    
     for _, id in ipairs(emptyIDs) do
         emptyLookup[id] = true
     end
 
+    local wallIDs = 
+        LDtk.get_tileIDs(
+            "Level_0",
+            "Just_a_wall",
+            "Walls_AutoLayer"
+        )
+
+        for _, id in ipairs(wallIDs) do
+            wallLookup[id] = true
+        end
     for x = 1, w do
         self.map[x] = {}
 
@@ -92,11 +105,11 @@ function Map:buildTiles()
                 groundID = 0
             end
 -- HATE
-      
+
             local uniqueID = self.unique:getTileAtPosition(x, y)
 
             local isWall =
-                wallID ~= 0 and not emptyLookup[wallID]
+                wallID ~= nil and wallID ~= 0 and wallLookup[wallID]
 
             local image =
                 self:getTileImage(groundID, uniqueID, wallID)
@@ -110,6 +123,7 @@ function Map:buildTiles()
                 self.map[x][y] = tile
             end
 
+            print("Tile at ", x, y, " IsWall:", isWall)
             tile.blockSight = isWall
             tile.visible = false
             tile.seen = false
@@ -139,6 +153,10 @@ end
 -- TILE ACCESS HELPERS
 --------------------------------------------------
 function Map:getTile(x, y)
+    if not self.map then
+        return nil
+    end
+
     if not self.map[x] then return nil end
     return self.map[x][y]
 end
@@ -154,19 +172,18 @@ end
 
 function Map:setVisible(x, y)
     local tile = self:getTile(x, y)
-    if not tile then return end
+    if not tile then print("Tile not found at:", x, y) return end
+    tile:setVisible(true)
+    table.insert(self.visibleTiles, tile)
+end
 
-    if not tile.visible then
-        tile.visible = true
-        tile.seen = true
-
-        table.insert(self.visibleTiles, tile)
-    end
+function Map:clearMap()
+    
 end
 
 function Map:clearVisibility()
     for _, tile in ipairs(self.visibleTiles) do
-        tile.visible = false
+        tile:setVisible(false)
     end
     self.visibleTiles = {}
 end

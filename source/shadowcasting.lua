@@ -15,9 +15,8 @@ local multipliers = {
 }
 
 function computeFOV(px, py, radius)
-    Map:clearMap()
-
-    Map:setVisible(px, py)
+    GLOBAL_MAP:clearVisibility()
+    GLOBAL_MAP:setVisible(px, py)
 
     for i = 1, 8 do
         castLight(px, py, 1, 1.0, 0.0, radius,
@@ -56,18 +55,19 @@ function castLight(cx, cy, row, startSlope, endSlope, radius, xx, xy, yx, yy)
             if X >= 1 and X <= MAP_WIDTH and Y >= 1 and Y <= MAP_HEIGHT then
                 local distSq = dx * dx + dy * dy
                 if distSq <= radiusSq then
-                    Map:setVisible(X, Y)
+                    GLOBAL_MAP:setVisible(X, Y)
                 end
 
+                local mapTile = GLOBAL_MAP:getTile(X, Y)
                 if blocked then
-                    if map[X][Y].blockSight then
+                    if mapTile and mapTile.blockSight then
                         newStart = rSlope
                     else
                         blocked = false
                         startSlope = newStart
                     end
                 else
-                    if map[X][Y].blockSight and i < radius then
+                    if mapTile and mapTile.blockSight and i < radius then
                         blocked = true
                         castLight(cx, cy, i + 1, startSlope, lSlope,
                             radius, xx, xy, yx, yy)

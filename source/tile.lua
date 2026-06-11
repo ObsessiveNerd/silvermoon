@@ -8,29 +8,33 @@ import "CoreLibs/sprites"
 
 class('Tile').extends(gfx.sprite)
 
+local BLACK_TILE = gfx.image.new(TILE_SIZE, TILE_SIZE)
+
+gfx.pushContext(BLACK_TILE)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+gfx.popContext()
+
 function Tile:init(x, y, image)
+    Tile.super.init(self)
+
     self.tileImage = image
+
     self.visible = false
     self.blockSight = false
     self.seen = false
-    self:setImage(self.tileImage)
-    -- self:setCenter(0, 0)
-    -- local posX, posY = self:tilePosToWorldPos(x, y)
+    self:setSize(TILE_SIZE, TILE_SIZE)
+    self:setCenter(0, 0)
     self:moveTo(x, y)
+    self:setImage(BLACK_TILE)
 end
 
-function Tile:draw()
-    if self.visible then
-        gfx.setImageDrawMode(gfx.kDrawModeCopy)
-        self.tileImage:draw(0, 0)
-    elseif self.blockSight and self.seen then
-        gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+function Tile:setVisible(isVisible)
+    self.visible = isVisible
+    if isVisible then
+        self:setImage(self.tileImage)
     else
-        gfx.setImageDrawMode(gfx.kDrawModeWhiteTransparent)
-        gfx.setColor(gfx.kColorBlack)
-        gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+        self:setImage(BLACK_TILE)
     end
 end
 
