@@ -114,8 +114,8 @@ function Map:buildTiles()
             local image =
                 self:getTileImage(groundID, uniqueID, wallID)
 
-            local tileX = (x - 1) * TILE_SIZE
-            local tileY = (y - 1) * TILE_SIZE
+            local tileX = (x - 1) * TILE_SIZE * ZOOM
+            local tileY = (y - 1) * TILE_SIZE * ZOOM
             local tile = nil
 
             if self.map[x][y] == nil then
@@ -123,7 +123,6 @@ function Map:buildTiles()
                 self.map[x][y] = tile
             end
 
-            print("Tile at ", x, y, " IsWall:", isWall)
             tile.blockSight = isWall
             tile.visible = false
             tile.seen = false
@@ -175,10 +174,6 @@ function Map:setVisible(x, y)
     if not tile then print("Tile not found at:", x, y) return end
     tile:setVisible(true)
     table.insert(self.visibleTiles, tile)
-end
-
-function Map:clearMap()
-    
 end
 
 function Map:clearVisibility()

@@ -25,6 +25,7 @@ function Player:init(revolver)
     self.playerSprite:moveTo(posX, posY)
     self.playerSprite:setTag(TAGS.Player)
     self.playerSprite:setZIndex(1000)
+    self.playerSprite:setScale(ZOOM)
     self.maxHealth = 100
     self.health = 100
 end
@@ -34,8 +35,15 @@ function Player:add()
     self.playerSprite:setCollideRect(0, 0, TILE_SIZE, TILE_SIZE)
     self.playerSprite:moveTo((self.tileX - 1) * (TILE_SIZE), (self.tileY - 1) * (TILE_SIZE))
     local x, y = self.playerSprite:getPosition()
-    -- gfx.setDrawOffset(-x + 200, -y + 120)
+    self:updateCamera(x, y)    
     computeFOV(self.tileX, self.tileY, self.viewRadius)
+end
+
+function Player:updateCamera(x, y)
+    gfx.setDrawOffset(
+            -x + 200 / ZOOM,
+            -y + 120 / ZOOM
+        )
 end
 
 function Player:update()
@@ -84,7 +92,7 @@ function Player:update()
             print("Player moved to tile: ", self.tileX, self.tileY)
             computeFOV(self.tileX, self.tileY, self.viewRadius)
         end
-        -- gfx.setDrawOffset(-x + 200, -y + 120)
+        self:updateCamera(x, y)
     end
 
     if pd.buttonJustPressed(pd.kButtonA) then
@@ -107,8 +115,8 @@ function Player:update()
 end
 
 function Player:getTilePosition(px, py)
-    local tx = math.floor(px / TILE_SIZE) + 1
-    local ty = math.floor(py / TILE_SIZE) + 1
+    local tx = math.floor(px / (TILE_SIZE * ZOOM)) + 1
+    local ty = math.floor(py / (TILE_SIZE * ZOOM)) + 1
     return tx, ty
 end
 

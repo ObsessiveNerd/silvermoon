@@ -12,6 +12,7 @@ import "contexts/battle"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+ZOOM = 2
 
 TAGS = {
     Player = 1,
