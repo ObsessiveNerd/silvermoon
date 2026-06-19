@@ -30,7 +30,6 @@ local contexts = {
     ['Battle'] = Battle()
 }
 
-pd.display.setScale(2)
 currentContext = contexts['World']
 currentContext:setup()
 

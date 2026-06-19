@@ -20,6 +20,7 @@ function Battle:init()
 end
 
 function Battle:setup()
+    pd.display.setScale(1)
     local battleScreen = gfx.image.new("sprites/battle-screen")
     self.battleScreenSprite = gfx.sprite.new(battleScreen)
     self.battleScreenSprite:moveTo(200, 120)

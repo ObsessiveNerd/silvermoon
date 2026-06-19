@@ -14,27 +14,12 @@ class('World').extends()
 
 
 function World:init()
-    self.map = Map()
-    GLOBAL_MAP = self.map
-
-    -- self.enemyFactory = EnemyFactory()
-    -- for i = 1, 1 do
-    --     local enemyData = {
-    --         type = "werewolf",
-    --         x = 9,
-    --         y = 9,
-    --         index = i
-    --     }
-    --     table.insert(enemiesList, enemyData)
-    -- end
+    GLOBAL_MAP = Map()
 end
 
 function World:setup()
-    self.map:createMap()
+    GLOBAL_MAP:createMap()
     player:add()
-    -- for _, enemy in ipairs(enemiesList) do
-    --     self.enemyFactory:addEnemyToMap(enemy.type, enemy.x, enemy.y, enemy.index)
-    -- end
 end
 
 function World:update()
@@ -43,13 +28,9 @@ function World:update()
         setContext('Reload')
         return
     end
-
-    -- if pd.buttonJustPressed(pd.kButtonA) then
-    --     setContext('Battle')
-    -- end
 end
 
 function World:tearDown()
     player:remove()
-    self.map:clearMap()
+    GLOBAL_MAP:clearMap()
 end

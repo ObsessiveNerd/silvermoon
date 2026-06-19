@@ -1,13 +1,18 @@
+local pd = playdate
 local gfx <const> = playdate.graphics
 
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "tile"
 import "PlaydateLDtkImporter/LDtk"
+import "enemies/enemy_factory"
+import "enemies/enemy_world"
 
 local TILE_SIZE = 8
+local enemyFactory = EnemyFactory()
 
 class("Map").extends()
+
 
 --------------------------------------------------
 -- INIT
@@ -24,14 +29,32 @@ function Map:init()
     self.walls = nil
     self.ground = nil
     self.unique = nil
+    self.mapLoaded = false
 end
 
 --------------------------------------------------
 -- PUBLIC SETUP
 --------------------------------------------------
 function Map:createMap()
-    self:loadLDtk()
-    self:buildTiles()
+    pd.display.setScale(ZOOM)
+    if self.mapLoaded then
+        self:reloadMap()
+    else
+        self:loadLDtk()
+        self:buildTiles()
+        self:createEntities()
+        self.mapLoaded = true
+    end
+end
+
+function Map:createEntities()
+    for index, entity in ipairs( LDtk.get_entities( "Level_0" ) ) do
+        --TEMP--
+        if entity.name == "Monster" then
+            local enemy = EnemyWorld(entity)
+            table.insert(enemiesList, enemy)
+        end
+    end
 end
 
 --------------------------------------------------
@@ -124,8 +147,8 @@ function Map:buildTiles()
             end
 
             tile.blockSight = isWall
-            tile.visible = false
             tile.seen = false
+            tile:setVisible(false)
 
             
             tile:add()
@@ -148,6 +171,16 @@ function Map:getTileImage(groundID, uniqueID, wallID)
     return self.tileTable:getImage(id)
 end
 
+function Map:getTileImageForEntity(entity)
+    local rectX = entity.tileset_rect.x
+    local rectY = entity.tileset_rect.y
+    local rectW = entity.tileset_rect.w
+    local rectH = entity.tileset_rect.h
+
+    local img = self.tileTable:getImage(rectX / rectW, rectY / rectH)
+    return img
+end
+
 --------------------------------------------------
 -- TILE ACCESS HELPERS
 --------------------------------------------------
@@ -158,6 +191,12 @@ function Map:getTile(x, y)
 
     if not self.map[x] then return nil end
     return self.map[x][y]
+end
+
+function Map:getTilePosition(px, py)
+    local tx = math.floor(px / (TILE_SIZE * ZOOM)) + 1
+    local ty = math.floor(py / (TILE_SIZE * ZOOM)) + 1
+    return tx, ty
 end
 
 --------------------------------------------------
@@ -181,6 +220,28 @@ function Map:clearVisibility()
         tile:setVisible(false)
     end
     self.visibleTiles = {}
+end
+
+function Map:reloadMap()
+    for x = 1, self.width do
+        for y = 1, self.height do
+            local tile = self:getTile(x, y)
+            if tile then
+                tile:add()
+            end
+        end
+    end
+end
+
+function Map:clearMap()
+    for x = 1, self.width do
+        for y = 1, self.height do
+            local tile = self:getTile(x, y)
+            if tile then
+                tile:remove()
+            end
+        end
+    end
 end
 
 --------------------------------------------------
