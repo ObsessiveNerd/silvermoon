@@ -37,6 +37,24 @@ function StatusBar:updateValue(newValue)
     self:setImage(barImage)
 end
 
+function StatusBar:setValue(newValue)
+    self.value = newValue
+    if self.value > self.maxValue then
+        self.value = self.maxValue
+    end
+    if self.value < 0 then
+        self.value = 0
+    end
+
+    local barImage = gfx.image.new("images/bar_outline")
+    gfx.pushContext(barImage)
+        gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+        local barWidth = (self.value / self.maxValue) * 100
+        gfx.fillRect(0, 0, barWidth, 10)
+    gfx.popContext()
+    self:setImage(barImage)
+end
+
 function StatusBar:tearDown()
     if self.icon then
         self.icon:remove()

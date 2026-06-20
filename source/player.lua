@@ -116,6 +116,14 @@ function Player:update()
     end
 end
 
+function Player:takeDamage(damage)
+    self.health -= damage
+    if self.health <= 0 then
+        print("Player has died!")
+        -- Handle player death (e.g., reset game, show game over screen, etc.)
+    end
+end
+
 function Player:getHealthValues()
     return self.health, self.maxHealth
 end

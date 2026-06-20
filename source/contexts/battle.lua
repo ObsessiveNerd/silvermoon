@@ -79,6 +79,8 @@ function Battle:update()
         print("All enemies defeated! Returning to world.")
         setContext('World')
     end
+
+    self.playerHealthBar:setValue(player.health)
 end
 
 function Battle:tearDown()
