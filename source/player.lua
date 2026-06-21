@@ -17,8 +17,8 @@ function Player:init(revolver)
     self.revolver = Revolver()
     playerImage = gfx.image.new("sprites/proto1")
     self.viewRadius = 4
-    self.tileX = 5
-    self.tileY = 5
+    self.tileX = 8
+    self.tileY = 6
     self.speed = 3
     self.maxHealth = 100
     self.health = 100
@@ -27,7 +27,9 @@ function Player:init(revolver)
     self.playerSprite:setTag(TAGS.Player)
     self.playerSprite:setZIndex(1000)
     self.playerSprite:setScale(ZOOM)
-    self.playerSprite:setCollideRect(0, 0, TILE_SIZE, TILE_SIZE)
+
+    local collisionPadding = 2
+    self.playerSprite:setCollideRect(collisionPadding, collisionPadding, (TILE_SIZE * ZOOM) - collisionPadding * 2, (TILE_SIZE * ZOOM) - collisionPadding * 2) 
 
 end
 

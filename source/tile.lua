@@ -15,10 +15,11 @@ gfx.pushContext(BLACK_TILE)
     gfx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
 gfx.popContext()
 
-function Tile:init(x, y, image)
+function Tile:init(x, y, image, solid)
     Tile.super.init(self)
 
     self.tileImage = image
+    self.solid = solid
 
     self.visible = false
     self.blockSight = false
@@ -28,6 +29,9 @@ function Tile:init(x, y, image)
     self:setCenter(0, 0)
     self:moveTo(x, y)
     self:setImage(BLACK_TILE)
+    if solid then
+        self:setCollideRect(0, 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM)
+    end
 end
 
 function Tile:setVisible(isVisible)

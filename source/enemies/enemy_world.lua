@@ -19,7 +19,7 @@ function EnemyWorld:init(entity)
     self:add()
 
     local posX, posY = entity.world_position.x * ZOOM, entity.world_position.y * ZOOM;
-    self:setCollideRect(0, 0, TILE_SIZE, TILE_SIZE)
+    self:setCollideRect(0, 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM)
     self:setTag(TAGS.Enemy)
     self:moveTo(posX, posY)
     self:setZIndex(1000)

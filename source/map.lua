@@ -142,7 +142,7 @@ function Map:buildTiles()
             local tile = nil
 
             if self.map[x][y] == nil then
-                tile = Tile(tileX, tileY, image)
+                tile = Tile(tileX, tileY, image, isWall)
                 self.map[x][y] = tile
             end
 
@@ -172,6 +172,10 @@ function Map:getTileImage(groundID, uniqueID, wallID)
 end
 
 function Map:getTileImageForEntity(entity)
+    if entity.name == "Monster" then
+        return self.tileTable:getImage(103)
+    end
+
     local rectX = entity.tileset_rect.x
     local rectY = entity.tileset_rect.y
     local rectW = entity.tileset_rect.w
