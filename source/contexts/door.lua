@@ -8,8 +8,8 @@ local gfx = playdate.graphics
 class('Door').extends()
 
 function Door:init()
-    self.x = 300 --not sure why I have to use these values
-    self.y = 300
+    self.x = 325 --not sure why I have to use these values
+    self.y = 180
 
     self.image = gfx.image.new("sprites/temp-door")
     self.sprite = gfx.sprite.new(self.image)
@@ -19,6 +19,7 @@ function Door:init()
 end
 
 function Door:setup()
+    pd.display.setScale(1)
     self.angle = 0
     self.sprite:moveTo(self.x + (self.w/2), self.y)
     self.sprite:setCenter(1, 0.5) -- right hinge

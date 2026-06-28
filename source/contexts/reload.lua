@@ -17,6 +17,7 @@ function Reload:init()
 end
 
 function Reload:setup()
+    pd.display.setScale(1)
     gfx.setDrawOffset(0, 0)
     self.image = gfx.image.new("sprites/revolver_reload")
     self.revolverSprite = gfx.sprite.new(self.image)
@@ -49,7 +50,7 @@ function Reload:redrawBullets()
             self:spentBullet(i)
         end
     end
-    pd.display.flush() --temp fix for the reolver. Unsure why the "spent" bullets will sometimes all disappear
+    -- pd.display.flush() --temp fix for the reolver. Unsure why the "spent" bullets will sometimes all disappear
 end
 
 function Reload:update()

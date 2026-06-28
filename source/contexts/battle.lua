@@ -9,7 +9,7 @@ import "contexts/reload"
 local pd = playdate
 local gfx = playdate.graphics
 local enemyFactory = EnemyFactory()
-local reloadContext = Reload()
+-- local reloadContext = Reload()
 
 class('Battle').extends()
 
@@ -21,6 +21,7 @@ end
 
 function Battle:setup()
     pd.display.setScale(1)
+    self.reloadContext = Reload()
     local battleScreen = gfx.image.new("sprites/battle-screen")
     self.battleScreenSprite = gfx.sprite.new(battleScreen)
     self.battleScreenSprite:moveTo(200, 120)
@@ -50,21 +51,21 @@ function Battle:setup()
         self.numberOfEnemiesDefeated = self.numberOfEnemiesDefeated + 1
     end)
 
-    reloadContext:setupScaled(0.4, 350, 220)
-    reloadContext:ignoreCloseButton()
+    self.reloadContext:setupScaled(0.4, 350, 220)
+    self.reloadContext:ignoreCloseButton()
 
 end
 
 function Battle:update()
     if self.isReloading then
-        reloadContext:update()
+        self.reloadContext:update()
         if pd.buttonJustPressed(pd.kButtonB) then
             self.isReloading = false
             print("Finished Reloading")
         end
     else
         if pd.buttonJustPressed(pd.kButtonA) then
-            local hasBullet = reloadContext:battleFire()
+            local hasBullet = self.reloadContext:battleFire()
             if hasBullet then
                 self.enemy:takeDamage(10)
             end
@@ -84,9 +85,11 @@ function Battle:update()
 end
 
 function Battle:tearDown()
+    self.enemy:tearDown()
+    self.playerHealthBar:tearDown()
+    self.reloadContext:tearDown()
+
     self.battleScreenSprite:remove()
     self.backgroundSprite:remove()
     self.cowboySprite:remove()
-    self.enemy:tearDown()
-    reloadContext:tearDown()
 end

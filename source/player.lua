@@ -14,6 +14,9 @@ class('Player').extends()
 currentDirection = 'Down'
 
 function Player:init(revolver)
+    self.inventory = {
+        key = 0
+    }
     self.revolver = Revolver()
     playerImage = gfx.image.new("sprites/proto1")
     self.viewRadius = 4
@@ -87,6 +90,17 @@ function Player:update()
                 collisions[i].other:removeFromWorld()
                 setContext('Battle')
                 return
+            elseif collisions[i].other:getTag() == TAGS.Key then
+                print("you got a key!")
+                self.inventory.key = self.inventory.key + 1
+                GLOBAL_MAP:removeEntity(collisions[i].other)
+            elseif collisions[i].other:getTag() == TAGS.Door then
+                if self.inventory.key == 0 then
+                    print("You need a key")
+                else
+                    self.inventory.key = self.inventory.key - 1
+                    setContext("Door")
+                end
             end
         end
 
@@ -99,22 +113,10 @@ function Player:update()
         self:updateCamera(x, y)
     end
 
-    if pd.buttonJustPressed(pd.kButtonA) then
-        local x, y = self.playerSprite:getPosition()
-        local xDir = 0
-        local yDir = 0
-
-        if currentDirection == 'Up' then
-            yDir = -1
-        elseif currentDirection == 'Down' then
-            yDir = 1
-        elseif currentDirection == 'Left' then
-            xDir = -1
-        elseif currentDirection == 'Right' then
-            xDir = 1
-        end
-
-        self.revolver:fire(x, y, xDir, yDir)
+    if pd.buttonJustPressed(pd.kButtonA) then --do something
+        
+    elseif pd.buttonJustPressed(pd.kButtonB) then --open inventory/reload
+        setContext("Reload")
     end
 end
 
@@ -140,4 +142,20 @@ end
 
 function Player:getRevolver()
     return self.revolver
+end
+
+function Player:fire()
+    local x, y = self.playerSprite:getPosition()
+    local xDir = 0
+    local yDir = 0
+
+    if currentDirection == 'Up' then
+        yDir = -1
+    elseif currentDirection == 'Down' then
+        yDir = 1
+    elseif currentDirection == 'Left' then
+        xDir = -1
+    elseif currentDirection == 'Right' then
+        xDir = 1
+    end
 end

@@ -18,6 +18,12 @@ TAGS = {
     Player = 1,
     Enemy = 2,
     Wall = 3,
+    Key = 4,
+    Door = 5
+}
+
+ITEM = {
+    key
 }
 
 player = Player()
@@ -44,6 +50,7 @@ function setContext(newContext)
     local context = contexts[newContext]
     if context then
         currentContext:tearDown()
+        gfx.clear()
         currentContext = context
         currentContext:setup()
     end

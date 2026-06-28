@@ -20,6 +20,7 @@ class("Map").extends()
 function Map:init()
     self.map = {}
     self.visibleTiles = {}
+    self.entities = {}
 
     self.width = 0
     self.height = 0
@@ -53,6 +54,28 @@ function Map:createEntities()
         if entity.name == "Monster" then
             local enemy = EnemyWorld(entity)
             table.insert(enemiesList, enemy)
+        elseif entity.name == "KeyItem" then
+            local keyImage = self:getTileImageForEntity(entity)
+            local keySprite = gfx.sprite.new(keyImage)
+            keySprite:setCollideRect(0, 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM)
+            keySprite:setTag(TAGS.Key)
+            keySprite:add()
+            table.insert(self.entities, keySprite)
+            local posX, posY = entity.world_position.x * ZOOM, entity.world_position.y * ZOOM;
+            print("adding key at " .. posX .. ", " .. posY)
+            keySprite:moveTo(posX, posY)
+            keySprite:setScale(ZOOM)
+            keySprite:setZIndex(1000)
+        elseif entity.name == "Door" then
+            local doorSprite = gfx.sprite.new()
+            doorSprite:setCollideRect(0, 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM)
+            doorSprite:setTag(TAGS.Door)
+            table.insert(self.entities, doorSprite)
+            local posX, posY = entity.world_position.x * ZOOM, entity.world_position.y * ZOOM;
+            print("adding door at " .. posX .. ", " .. posY)
+            doorSprite:moveTo(posX, posY)
+            doorSprite:setScale(ZOOM)
+            doorSprite:add()
         end
     end
 end
@@ -174,6 +197,8 @@ end
 function Map:getTileImageForEntity(entity)
     if entity.name == "Monster" then
         return self.tileTable:getImage(103)
+    elseif entity.name == "KeyItem" then
+        return self.tileTable:getImage(30)
     end
 
     local rectX = entity.tileset_rect.x
@@ -235,6 +260,13 @@ function Map:reloadMap()
             end
         end
     end
+    for index, value in ipairs(enemiesList) do
+        value:add()
+    end
+
+    for index, value in ipairs(self.entities) do
+        value:add()
+    end
 end
 
 function Map:clearMap()
@@ -246,6 +278,25 @@ function Map:clearMap()
             end
         end
     end
+
+    for index, value in ipairs(enemiesList) do
+        value:remove()
+    end
+
+    for index, value in ipairs(self.entities) do
+        value:remove()
+    end
+end
+
+function Map:removeEntity(entity)
+    for i, v in ipairs(self.entities) do
+        if v == entity then
+            table.remove(self.entities, i)
+            entity:remove()
+            return true -- Item found and removed
+        end
+    end
+    return false -- Item not found
 end
 
 --------------------------------------------------
