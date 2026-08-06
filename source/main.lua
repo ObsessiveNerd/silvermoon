@@ -19,7 +19,10 @@ TAGS = {
     Enemy = 2,
     Wall = 3,
     Key = 4,
-    Door = 5
+    Door = 5,
+    Interactable = 6,
+    NPC = 7,
+    Item = 8
 }
 
 ITEM = {

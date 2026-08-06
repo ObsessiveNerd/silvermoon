@@ -58,16 +58,15 @@ function castLight(cx, cy, row, startSlope, endSlope, radius, xx, xy, yx, yy)
                     GLOBAL_MAP:setVisible(X, Y)
                 end
 
-                local mapTile = GLOBAL_MAP:getTile(X, Y)
                 if blocked then
-                    if mapTile and mapTile.blockSight then
+                    if GLOBAL_MAP:isOpaque(X, Y) then
                         newStart = rSlope
                     else
                         blocked = false
                         startSlope = newStart
                     end
                 else
-                    if mapTile and mapTile.blockSight and i < radius then
+                    if GLOBAL_MAP:isOpaque(X, Y) and i < radius then
                         blocked = true
                         castLight(cx, cy, i + 1, startSlope, lSlope,
                             radius, xx, xy, yx, yy)

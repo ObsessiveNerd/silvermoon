@@ -55,6 +55,10 @@ function Player:getPosition()
     return self.playerSprite:getPosition()
 end
 
+function Player:getMapTilePos()
+    return self.tileX, self.tileY
+end
+
 function Player:update()
     local needsUpdate = false
     local moveX = 0
@@ -130,10 +134,6 @@ end
 
 function Player:getHealthValues()
     return self.health, self.maxHealth
-end
-
-function Player:getMapTilePos()
-    return self.tileX, self.tileY
 end
 
 function Player:remove()

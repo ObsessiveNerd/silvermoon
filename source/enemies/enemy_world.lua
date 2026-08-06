@@ -9,16 +9,15 @@ import "player"
 class('EnemyWorld').extends(gfx.sprite)
 
 function EnemyWorld:init(entity)
-    self.image = GLOBAL_MAP:getTileImageForEntity(entity)
+    self.image = GLOBAL_MAP:getEntityImage(entity)
     
-    self.worldIndex = worldIndex
     self.speed = 5
     self.viewRadius = 5
     
     self:setImage(self.image)
     self:add()
 
-    local posX, posY = entity.world_position.x * ZOOM, entity.world_position.y * ZOOM;
+    local posX, posY = GLOBAL_MAP:tileToWorld(entity.gridX, entity.gridY)
     self:setCollideRect(0, 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM)
     self:setTag(TAGS.Enemy)
     self:moveTo(posX, posY)
@@ -75,6 +74,11 @@ function EnemyWorld:moveTowardsPlayer()
 end
 
 function EnemyWorld:removeFromWorld()
-    table.remove(enemiesList, self.worldIndex)
+    for index, enemy in ipairs(enemiesList) do
+        if enemy == self then
+            table.remove(enemiesList, index)
+            break
+        end
+    end
     self:remove()
 end
