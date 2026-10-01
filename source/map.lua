@@ -9,6 +9,7 @@ import "ldtk_config"
 import "ldtk_world"
 import "entity_registry"
 import "enemies/enemy_world"
+import "entities/door_world"
 
 local TILE_SIZE <const> = LDtkConfig.tileSize
 
@@ -204,15 +205,8 @@ function Map:registerEntityFactories()
         return sprite
     end)
     self.registry:register("Door", function(map, entity)
-        local closed = entity.fields.startsOpen ~= true
-        local sprite = map:createEntitySprite(entity, TAGS.Door, closed)
-        sprite.ldtkEntity = entity
-        function sprite:setOpen(isOpen)
-            self.isOpen = isOpen
-            map:setCollisionValue(entity.gridX, entity.gridY, isOpen and LDtkConfig.collision.Empty or LDtkConfig.collision.Solid)
-        end
-        sprite:setOpen(not closed)
-        return sprite
+        local door = DoorWorld(entity)
+        return door
     end)
     self.registry:register("Light", function(_, entity)
         return { ldtkEntity = entity, radius = entity.fields.radius or 4, enabled = entity.fields.enabled ~= false, flicker = entity.fields.flicker == true }
