@@ -34,6 +34,7 @@ function Map:createMap(levelIdentifier)
         self:reloadMap()
         return
     end
+
     if self.mapLoaded then self:destroyMap() end
     self.levelIdentifier = levelIdentifier
     self:loadLDtk(levelIdentifier)
@@ -222,6 +223,7 @@ function Map:createEntitySprite(entity, tag, blocksMovement)
     local image = self:getEntityImage(entity)
     local sprite = gfx.sprite.new(image)
     local px, py = self:tileToWorld(entity.gridX, entity.gridY)
+    sprite:setCenter(0, 0)
     sprite:moveTo(px, py)
     sprite:setScale(ZOOM)
     sprite:setZIndex(1000)

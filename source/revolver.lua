@@ -8,12 +8,12 @@ class('Revolver').extends()
 local currentBulletSlot = 1
 local bullets = 
 {
-    {loaded = false, type = 'none', emptyCasing = false},
-    {loaded = false, type = 'none', emptyCasing = false},
-    {loaded = false, type = 'none', emptyCasing = false},
-    {loaded = false, type = 'none', emptyCasing = false},
-    {loaded = false, type = 'none', emptyCasing = false},
-    {loaded = false, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
+    {loaded = true, type = 'none', emptyCasing = false},
 }
 
 function Revolver:init()

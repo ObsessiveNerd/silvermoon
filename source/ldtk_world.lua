@@ -1,4 +1,3 @@
-import "CoreLibs/json"
 
 -- LDtkWorld reads metadata the tile importer does not expose (IntGrid values,
 -- entity fields and stable entity ids).  Tile graphics are still created by
@@ -13,7 +12,7 @@ end
 function LDtkWorld:load()
     local file = playdate.file.open(self.path, playdate.file.kFileRead)
     assert(file, "Could not open LDtk project: " .. self.path)
-    local contents = file:read(file:getSize())
+    local contents = file:read(playdate.file.getSize(self.path))
     file:close()
     self.data = json.decode(contents)
     assert(self.data, "Could not decode LDtk project: " .. self.path)

@@ -20,13 +20,12 @@ function Player:init(revolver)
     self.revolver = Revolver()
     playerImage = gfx.image.new("sprites/proto1")
     self.viewRadius = 4
-    self.tileX = 8
-    self.tileY = 6
     self.speed = 3
     self.maxHealth = 100
     self.health = 100
 
     self.playerSprite = gfx.sprite.new(playerImage)
+    self.playerSprite:setCenter(0.5, 0.5)
     self.playerSprite:setTag(TAGS.Player)
     self.playerSprite:setZIndex(1000)
     self.playerSprite:setScale(ZOOM)
@@ -38,9 +37,10 @@ end
 
 function Player:add()
     self.playerSprite:add()
-    local posX, posY = (self.tileX - 1) * (TILE_SIZE * ZOOM), (self.tileY - 1) * (TILE_SIZE * ZOOM)
-    self.playerSprite:moveTo(posX, posY)
-    self:updateCamera(posX, posY)    
+    local posX, posY = GLOBAL_MAP:tileToWorld(self.tileX, self.tileY)
+    local halfTileSize = (TILE_SIZE * ZOOM) / 2
+    self.playerSprite:moveTo(posX + halfTileSize, posY + halfTileSize)
+    self:updateCamera(posX + halfTileSize, posY + halfTileSize)
     computeFOV(self.tileX, self.tileY, self.viewRadius)
 end
 
@@ -90,11 +90,7 @@ function Player:update()
         
         local actualX, actualY, collisions, numberOfCollisions = self.playerSprite:moveWithCollisions(goalX, goalY)
         for i = 1, numberOfCollisions do
-            if collisions[i].other:getTag() == TAGS.Enemy then
-                collisions[i].other:removeFromWorld()
-                setContext('Battle')
-                return
-            elseif collisions[i].other:getTag() == TAGS.Key then
+            if collisions[i].other:getTag() == TAGS.Key then
                 print("you got a key!")
                 self.inventory.key = self.inventory.key + 1
                 GLOBAL_MAP:removeEntity(collisions[i].other)
@@ -108,13 +104,13 @@ function Player:update()
             end
         end
 
-        local tx, ty = GLOBAL_MAP:getTilePosition(x, y)
+        local tx, ty = GLOBAL_MAP:getTilePosition(actualX, actualY)
         if tx ~= self.tileX or ty ~= self.tileY then
             self.tileX = tx
             self.tileY = ty
             computeFOV(self.tileX, self.tileY, self.viewRadius)
         end
-        self:updateCamera(x, y)
+        self:updateCamera(actualX, actualY)
     end
 
     if pd.buttonJustPressed(pd.kButtonA) then --do something

@@ -80,5 +80,6 @@ function EnemyWorld:removeFromWorld()
             break
         end
     end
+    GLOBAL_MAP:removeEntity(self)
     self:remove()
 end
